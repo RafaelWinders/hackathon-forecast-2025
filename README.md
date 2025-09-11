@@ -20,8 +20,8 @@ This repository contains a sophisticated solution for retail sales forecasting, 
 │   └── feature_engineering_metadata.pkl # Processing metadata
 ├── notebooks/                     # Analysis and processing notebooks
 │   ├── 01-EDA.ipynb              # Exploratory Data Analysis
-│   ├── 02-Feature-Engineering.ipynb # Feature creation and optimization
-│   └── 03-Modeling.ipynb         # Model development (coming next)
+│   ├── 02-Feature-Engineering-Dask.ipynb # Feature creation with Dask+Polars
+│   └── 03-Modeling.ipynb         # Model development and training
 ├── src/                          # Reusable source code
 ├── submission/                   # Final prediction files
 ├── README.md                     # This documentation
@@ -38,20 +38,29 @@ This repository contains a sophisticated solution for retail sales forecasting, 
 
 ### 2. Data Processing & Feature Engineering
 - **Grid Inteligente**: Creates combinations only for PDV/product pairs with historical sales
-- **Dask-Optimized Pipeline**: Memory-efficient processing of 50M+ records
+- **Hybrid Pipeline**: Dask for aggregation + Polars for feature engineering
+- **Memory Optimization**: Reduced from 248GB to ~14GB through intelligent filtering
 - **Feature Categories**:
-  - **Temporal**: Date-based features with cyclical encoding
+  - **Temporal**: Date-based features with cyclical encoding (sin/cos)
   - **Historical/Static**: Long-term product lifecycle features
   - **Lag Variables**: Sales from previous 1-4 weeks
-  - **Rolling Statistics**: Moving averages, std dev, min/max over multiple windows
-  - **Categorical**: Encoded PDV and product identifiers
+  - **Rolling Statistics**: Moving averages, std dev, min/max over 4-week windows
+  - **Categorical**: Hashed encodings for PDV and product identifiers
+  - **Interaction**: Combined PDV-product features
 
 ### 3. Cold Start Strategy
 - Identifies new PDV/product combinations not seen in training
 - Provides safe predictions (quantity=0) for unknown combinations
 - Ensures complete coverage for prediction requirements
 
-### 4. Key Innovations
+### 4. Machine Learning & Validation
+- **Temporal Validation**: Proper time series split (no data leakage)
+- **Multiple Models**: Baseline, Random Forest, LightGBM, XGBoost
+- **Metrics**: MAE, RMSE, R², and WMAPE (official competition metric)
+- **Feature Importance**: Analysis of most predictive variables
+- **Robust Baselines**: Simple models for performance comparison
+
+### 5. Key Innovations
 - **Big Data Ready**: Processes datasets larger than RAM using Dask
 - **Memory Efficient**: No memory crashes even with limited resources  
 - **Sparse Data Handling**: Preserves meaningful zeros while eliminating irrelevant combinations
@@ -75,14 +84,20 @@ Python 3.8+
 
 ### Running the Analysis
 1. **EDA**: Start with `notebooks/01-EDA.ipynb` for data exploration
-2. **Feature Engineering**: 
+2. **Feature Engineering**: Execute `notebooks/02-Feature-Engineering-Dask.ipynb` for feature creation
 3. **Modeling**: Execute `notebooks/03-Modeling.ipynb` for model training and prediction
+
+### Generated Artifacts
+- **dados_features_completo.csv** (11GB): Complete dataset with engineered features
+- **dados_features_completo.parquet** (194MB): Optimized format for fast loading
+- **feature_engineering_metadata.pkl**: Processing metadata and feature descriptions
 
 ## Development Phases
 - **✅ Phase 1**: Environment setup and project organization 
-- **✅ Phase 2**: Data exploration and intelligent feature engineering
-- **🔄 Phase 3**: Model development and validation (in progress)
-- **⏳ Phase 4**: Final predictions and submission
+- **✅ Phase 2**: Data exploration with comprehensive EDA
+- **✅ Phase 3**: Intelligent feature engineering with Dask+Polars optimization
+- **✅ Phase 4**: Model development and training with temporal validation
+- **🔄 Phase 5**: Final predictions and submission preparation (next)
 
 ## Team
 - Developer: Rafael
