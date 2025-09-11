@@ -76,8 +76,6 @@ Python 3.8+
 ### Running the Analysis
 1. **EDA**: Start with `notebooks/01-EDA.ipynb` for data exploration
 2. **Feature Engineering**: 
-   - **For Big Data**: Run `notebooks/02-Feature-Engineering-Dask.ipynb` (recommended for large datasets)
-   - **Alternative**: Use `notebooks/02-Feature-Engineering-Recovery.ipynb` for memory-constrained environments
 3. **Modeling**: Execute `notebooks/03-Modeling.ipynb` for model training and prediction
 
 ## Development Phases
