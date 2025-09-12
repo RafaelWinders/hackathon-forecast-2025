@@ -1,178 +1,134 @@
-# Hackathon Forecast 2025
 
-## Project Overview
-This repository contains a sophisticated solution for retail sales forecasting, implementing intelligent feature engineering and machine learning techniques to predict weekly product sales across multiple PDVs (points of sale).
+# Hackathon Forecast Big Data 2025 - Modelo de Previsão de Vendas
 
-## Key Features
-- **Intelligent Grid Strategy**: Optimized memory usage by 94.4% through selective combination processing
-- **Advanced Feature Engineering**: 50+ features including lag variables, rolling statistics, and historical context
-- **Cold Start Handling**: Robust strategy for predicting new PDV/product combinations
-- **Scalable Architecture**: Batch processing for handling large datasets efficiently
+## 🎯 Objetivo
 
-## Project Structure
-```
-/hackathon-forecast-2025
-├── data/                          # Data files and processed features
-│   ├── *.parquet                  # Raw transaction data
-│   ├── dados_features_completo.parquet # Final processed dataset (optimized)
-│   └── feature_engineering_metadata.pkl # Processing metadata
-├── notebooks/                     # Analysis and processing notebooks
-│   ├── 01-EDA.ipynb              # Exploratory Data Analysis
-│   ├── 02-Feature-Engineering-Dask.ipynb # Feature creation with Dask+Polars
-│   ├── 03-Modeling-Experiments.ipynb # (Optional) Complete model exploration & comparison
-│   └── 04-Final-Pipeline.ipynb   # (Main) Production pipeline for final submission
-├── models/                        # Trained models
-│   └── lightgbm_final.txt        # Final LightGBM model
-├── submission/                    # Final prediction files
-│   ├── submission.csv            # Submission in CSV format
-│   └── submission.parquet        # Submission in Parquet format
-├── README.md                     # This documentation
-└── requirements.txt             # Python dependencies
-```
+Este projeto foi desenvolvido para o **Desafio Técnico – Hackathon Forecast Big Data 2025**. O objetivo é criar um modelo de previsão de vendas (forecast) para apoiar o varejo na reposição de produtos.
 
-## Technical Approach
+A tarefa consiste em prever a **quantidade semanal de vendas por PDV (Ponto de Venda) e SKU (Unidade de Manutenção de Estoque)** para as cinco semanas de janeiro de 2023, utilizando como base o histórico de vendas de 2022.
 
-### 1. Big Data Processing with Dask
-- **Out-of-Core Processing**: Handles datasets larger than available RAM
-- **Parallel Computation**: Automatic parallelization across CPU cores
-- **Lazy Evaluation**: Computations executed only when needed
-- **Scalable Architecture**: Can scale from single machine to distributed clusters
+-----
 
-### 2. Data Processing & Feature Engineering
-- **Grid Inteligente**: Creates combinations only for PDV/product pairs with historical sales
-- **Hybrid Pipeline**: Dask for aggregation + Polars for feature engineering
-- **Memory Optimization**: Reduced from 248GB to ~14GB through intelligent filtering
-- **Feature Categories**:
-  - **Temporal**: Date-based features with cyclical encoding (sin/cos)
-  - **Historical/Static**: Long-term product lifecycle features
-  - **Lag Variables**: Sales from previous 1-4 weeks
-  - **Rolling Statistics**: Moving averages, std dev, min/max over 4-week windows
-  - **Categorical**: Hashed encodings for PDV and product identifiers
-  - **Interaction**: Combined PDV-product features
+## ⚙️ Instalação e Configuração do Ambiente
 
-### 3. Cold Start Strategy
-- Identifies new PDV/product combinations not seen in training
-- Provides safe predictions (quantity=0) for unknown combinations
-- Ensures complete coverage for prediction requirements
+Siga os passos abaixo para configurar o ambiente e executar o projeto.
 
-### 4. Machine Learning & Validation
-- **Temporal Validation**: Proper time series split (no data leakage)
-- **Multiple Models**: Baseline, Random Forest, LightGBM, XGBoost
-- **Metrics**: MAE, RMSE, R², and WMAPE (official competition metric)
-- **Feature Importance**: Analysis of most predictive variables
-- **Robust Baselines**: Simple models for performance comparison
+### 1\. Pré-requisitos
 
-### 5. Key Innovations
-- **Big Data Ready**: Processes datasets larger than RAM using Dask
-- **Memory Efficient**: No memory crashes even with limited resources  
-- **Sparse Data Handling**: Preserves meaningful zeros while eliminating irrelevant combinations
-- **Distributed Processing**: Ready for cloud/cluster deployment
-- **Historical Context**: Captures product lifecycle and seasonality patterns
+  - **Python 3.9+**
+  - **Git**
 
-## Setup & Usage
+### 2\. Clonar o Repositório
 
-### Prerequisites
+### 3\. Criar e Ativar o Ambiente Virtual
+
+É altamente recomendado usar um ambiente virtual para isolar as dependências.
+
+  * **Para Windows:**
+    ```cmd
+    # 1. Criar o ambiente virtual
+    py -m venv venv
+
+    # 2. Ativar o ambiente
+    .\venv\Scripts\activate
+    ```
+  * **Para Linux/macOS:**
+    ```bash
+    # 1. Criar o ambiente virtual
+    python3 -m venv venv
+
+    # 2. Ativar o ambiente
+    source venv/bin/activate
+    ```
+
+### 4\. Instalar as Dependências
+
+Todas as bibliotecas necessárias estão listadas no arquivo `requirements.txt`.
+
 ```bash
-Python 3.8+
-16GB+ RAM recommended
+pip install -r requirements.txt
 ```
 
-### Installation
-1. Clone this repository
-2. Create virtual environment: `python -m venv venv` (Linux/Mac) or `py -m venv venv` (Windows)
-3. Activate environment: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Linux/Mac)
-4. Install dependencies: `pip install -r requirements.txt` (may take 5-10 minutes for all ML libraries)
-5. **Setup Jupyter kernel**: `python -m ipykernel install --user --name=hackathon-forecast --display-name="Python (hackathon-forecast)"`
-6. **Test installation**: `python test_env.py` (should show all imports as "OK")
-7. Place data files in the `data/` folder
+*Observação: A instalação pode levar de 5 a 10 minutos, dependendo da sua conexão com a internet.*
 
-### Notebook Structure & Execution
+### 5\. Configurar o Kernel do Jupyter
 
-#### For Generating Submission Files:
-1. **Feature Engineering**: Execute `notebooks/02-Feature-Engineering-Dask.ipynb` (if not done already)
-2. **Final Pipeline**: Execute `notebooks/04-Final-Pipeline.ipynb` from start to finish
-   - This is the **main production notebook**
-   - Generates `submission.csv` and `submission.parquet` automatically
-   - Clean, linear execution without errors
-   - Self-contained and reproducible
+Para garantir que os notebooks usem o ambiente virtual correto, execute o comando abaixo:
 
-#### For Understanding the Research Process (Optional):
-1. **EDA**: `notebooks/01-EDA.ipynb` - Data exploration and analysis
-2. **Experiments**: `notebooks/03-Modeling-Experiments.ipynb` - Complete model comparison journey
-   - Documents our exploration of Baselines, RandomForest, LightGBM, and XGBoost
-   - Contains technical justification for choosing LightGBM
-   - Shows why XGBoost was rejected (memory instability issues)
-
-### How to Generate Submission
-
-#### Using VSCode (Recommended):
 ```bash
-# After installing dependencies:
-1. Open project in VSCode
-2. Open notebooks/04-Final-Pipeline.ipynb
-3. Click "Select Kernel" in the top right
-4. Choose "Python Environments..."
-5. Select the interpreter from your venv: ./venv/Scripts/python.exe (Windows) or ./venv/bin/python (Linux/Mac)
-6. Execute all cells using "Run All"
-7. Files will be generated automatically:
-   - submissions/previsao_final.csv
-   - submissions/previsao_final.parquet
+python -m ipykernel install --user --name=hackathon-forecast --display-name="Python (hackathon-forecast)"
 ```
 
-#### Using Jupyter Notebook:
+Após executar os notebooks, lembre-se de selecionar o kernel **"Python (hackathon-forecast)"** no canto superior direito da interface do Jupyter.
+
+### 6\. Testar a Instalação
+
+Para verificar se todas as bibliotecas foram instaladas corretamente, execute o script de teste:
+
 ```bash
-# After installing dependencies and setting up Jupyter kernel:
-1. Activate virtual environment: venv\Scripts\activate (Windows) or source venv/bin/activate (Linux/Mac)
-2. Start Jupyter: jupyter notebook or jupyter lab
-3. Open notebooks/04-Final-Pipeline.ipynb
-4. Select kernel: "Python (hackathon-forecast)" from the kernel menu
-5. Execute all cells completely
-6. Files will be generated automatically:
-   - submissions/previsao_final.csv
-   - submissions/previsao_final.parquet
+python test_env.py
 ```
 
-**Important Notes:**
-- **VSCode**: Make sure to select the correct Python interpreter from your venv folder
-- **Jupyter**: Always activate the virtual environment before starting Jupyter
-- If you still get import errors, restart VSCode/Jupyter after installing dependencies
-- Check that the interpreter path shows your venv folder (e.g., `./venv/Scripts/python.exe`)
+A saída deve mostrar "OK" para todas as importações.
 
-### Generated Artifacts
-- **dados_features_completo.parquet**: Complete dataset with engineered features (optimized)
-- **feature_engineering_metadata.pkl**: Processing metadata and feature descriptions
-- **lightgbm_final.txt**: Trained LightGBM model ready for predictions
-- **submission.csv** & **submission.parquet**: Final prediction files for competition
+### 7\. Baixar os Dados
 
-## Development Phases
-- **✅ Phase 1**: Environment setup and project organization 
-- **✅ Phase 2**: Data exploration with comprehensive EDA
-- **✅ Phase 3**: Intelligent feature engineering with Dask+Polars optimization
-- **✅ Phase 4**: Model research and comparison (documented in experiments notebook)
-- **✅ Phase 5**: Production pipeline and final submission generation
+Os dados brutos fornecidos pelo desafio devem ser colocados na pasta `/data`. Certifique-se de que os seguintes arquivos estejam presentes:
 
-## Model Selection Process
-Our rigorous model selection process (documented in `03-Modeling-Experiments.ipynb`):
+  - `data/part-00000-tid-2779033056155408584-f6316110-4c9a-4061-ae48-69b77c7c8c36-4-1-c000.snappy.parquet`
+  - `data/part-00000-tid-5196563791502273604-c90d3a24-52f2-4955-b4ec-fb143aae74d8-4-1-c000.snappy.parquet`
+  - `data/part-00000-tid-7173294866425216458-eae53fbf-d19e-4130-ba74-78f96b9675f1-4-1-c000.snappy.parquet`
 
-1. **Baseline Models**: Established strong baselines (Lag-1, Lag-4, Combo Mean)
-2. **RandomForest**: Skipped due to memory constraints with 50M+ records
-3. **LightGBM**: Excellent performance (WMAPE: 15.25%) with robust memory handling
-4. **XGBoost**: Slightly better performance but **critical production issues**:
-   - Memory allocation errors (`bad_allocation`) when training on full dataset
-   - System instability and crashes during production runs
-   - Even with `tree_method="approx"` optimization, still problematic
+-----
 
-**Final Decision**: **LightGBM** selected for production due to:
-- ✅ **Robustness**: Consistent performance on large datasets  
-- ✅ **Memory Efficiency**: No crashes or allocation errors
-- ✅ **Speed**: 3-5x faster training than XGBoost
-- ✅ **Reliability**: Stable predictions in production environment  
-- ✅ **Performance**: Only 0.5% worse than XGBoost (acceptable trade-off)
+## 🚀 Como Gerar a Submissão (Fluxo de Execução)
+
+O processo é dividido em duas etapas principais, executadas através dos notebooks Jupyter.
+
+### Passo 1: Engenharia de Features
+
+Abra e execute todas as células do notebook:
+▶️ **`notebooks/02-Feature-Engineering-Dask.ipynb`**
+
+  - **O que ele faz?** Este notebook carrega os dados brutos, aplica todo o pré-processamento e a engenharia de features, e salva os datasets de treino e teste processados na pasta `data/`.
+  - **Resultado:** Arquivos processados.
+
+### Passo 2: Treinamento e Geração da Submissão
+
+Após a conclusão do Passo 1, abra e execute todas as células do notebook:
+▶️ **`notebooks/04-Final-Pipeline.ipynb`**
+
+  - **O que ele faz?** Carrega os dados processados, treina o modelo LightGBM final e gera o arquivo de previsão para as 5 semanas de janeiro de 2023.
+  - **Resultado:** O arquivo `submission.parquet` será salvo na pasta submissions, pronto para ser enviado.
+
+-----
+
+## 📂 Estrutura do Projeto
+
+```
+.
+├── data/                  # Dados brutos e processados
+├── notebooks/             # Jupyter Notebooks com a análise e desenvolvimento
+│   ├── 01-EDA.ipynb       # Análise Exploratória dos Dados
+│   ├── 02-Feature-Engineering-Dask.ipynb # PASSO 1: Gera os dados de treino/teste
+│   ├── 03-Modeling-Experiments.ipynb     # Documentação da escolha e comparação de modelos
+│   └── 04-Final-Pipeline.ipynb           # PASSO 2: Treina o modelo e gera a submissão
+├── .gitignore             # Arquivos ignorados pelo Git
+├── requirements.txt       # Lista de dependências Python
+├── test_env.py            # Script para verificar a instalação do ambiente
+└── README.md              # Documentação do projeto
+```
+
+-----
+
+## 🛠️ Metodologia Aplicada
+
+A solução foi desenvolvida seguindo uma abordagem estruturada.
+
+1.  **Análise Exploratória (`01-EDA.ipynb`):** Investigação profunda dos dados para entender distribuições, sazonalidades e tendências, guiando a engenharia de features.
+2.  **Engenharia de Features Escalável (`02-Feature-Engineering-Dask.ipynb`):** Uso de **Dask** e **Polars** para processar grande volume de dados. Foram criadas features temporais, de lag e estatísticas móveis.
+3.  **Modelagem e Documentação (`03-Modeling-Experiments.ipynb`):** Este notebook serve como um "diário de bordo", documentando os testes com diferentes algoritmos (XGBoost, LightGBM) e justificando a escolha do **LightGBM** como modelo final devido ao seu equilíbrio entre performance, velocidade e eficiência de memória.
+4.  **Pipeline Final (`04-Final-Pipeline.ipynb`):** Consolida as melhores técnicas em um pipeline otimizado para treinar o modelo e gerar a previsão final de forma reprodutível.
 
 ## Team
-- Developer: Rafael Widers
-
-## Competition Details
-- Repository: Public GitHub repository
-- Focus: Time series forecasting
-- Deliverables: Prediction files (CSV/Parquet format)
+- Developer: Rafael Winders
