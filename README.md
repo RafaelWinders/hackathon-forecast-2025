@@ -79,10 +79,12 @@ Python 3.8+
 
 ### Installation
 1. Clone this repository
-2. Create virtual environment: `python -m venv venv`
+2. Create virtual environment: `python -m venv venv` (Linux/Mac) or `py -m venv venv` (Windows)
 3. Activate environment: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Linux/Mac)
-4. Install dependencies: `pip install -r requirements.txt`
-5. Place data files in the `data/` folder
+4. Install dependencies: `pip install -r requirements.txt` (may take 5-10 minutes for all ML libraries)
+5. **Setup Jupyter kernel**: `python -m ipykernel install --user --name=hackathon-forecast --display-name="Python (hackathon-forecast)"`
+6. **Test installation**: `python test_env.py` (should show all imports as "OK")
+7. Place data files in the `data/` folder
 
 ### Notebook Structure & Execution
 
@@ -102,13 +104,39 @@ Python 3.8+
    - Shows why XGBoost was rejected (memory instability issues)
 
 ### How to Generate Submission
+
+#### Using VSCode (Recommended):
 ```bash
 # After installing dependencies:
-1. Execute notebooks/04-Final-Pipeline.ipynb completely
-2. Files will be generated automatically:
-   - submission/submission.csv
-   - submission/submission.parquet
+1. Open project in VSCode
+2. Open notebooks/04-Final-Pipeline.ipynb
+3. Click "Select Kernel" in the top right
+4. Choose "Python Environments..."
+5. Select the interpreter from your venv: ./venv/Scripts/python.exe (Windows) or ./venv/bin/python (Linux/Mac)
+6. Execute all cells using "Run All"
+7. Files will be generated automatically:
+   - submissions/previsao_final.csv
+   - submissions/previsao_final.parquet
 ```
+
+#### Using Jupyter Notebook:
+```bash
+# After installing dependencies and setting up Jupyter kernel:
+1. Activate virtual environment: venv\Scripts\activate (Windows) or source venv/bin/activate (Linux/Mac)
+2. Start Jupyter: jupyter notebook or jupyter lab
+3. Open notebooks/04-Final-Pipeline.ipynb
+4. Select kernel: "Python (hackathon-forecast)" from the kernel menu
+5. Execute all cells completely
+6. Files will be generated automatically:
+   - submissions/previsao_final.csv
+   - submissions/previsao_final.parquet
+```
+
+**Important Notes:**
+- **VSCode**: Make sure to select the correct Python interpreter from your venv folder
+- **Jupyter**: Always activate the virtual environment before starting Jupyter
+- If you still get import errors, restart VSCode/Jupyter after installing dependencies
+- Check that the interpreter path shows your venv folder (e.g., `./venv/Scripts/python.exe`)
 
 ### Generated Artifacts
 - **dados_features_completo.parquet**: Complete dataset with engineered features (optimized)

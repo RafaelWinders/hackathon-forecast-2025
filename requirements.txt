@@ -7,7 +7,7 @@ numpy>=1.24.0
 
 # Alternative lightweight options
 pandas>=2.0.0  # Still needed for some operations
-polars>=0.20.0  # Optional alternative
+polars>=0.20.21   # Optional alternative
 
 # Machine Learning
 scikit-learn>=1.3.0
