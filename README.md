@@ -14,16 +14,18 @@ This repository contains a sophisticated solution for retail sales forecasting, 
 /hackathon-forecast-2025
 ├── data/                          # Data files and processed features
 │   ├── *.parquet                  # Raw transaction data
-│   ├── dados_features_completo.csv # Final processed dataset
-│   ├── label_encoders.pkl         # Categorical encoders
-│   ├── cold_start_strategy.pkl    # Cold start handling
+│   ├── dados_features_completo.parquet # Final processed dataset (optimized)
 │   └── feature_engineering_metadata.pkl # Processing metadata
 ├── notebooks/                     # Analysis and processing notebooks
 │   ├── 01-EDA.ipynb              # Exploratory Data Analysis
 │   ├── 02-Feature-Engineering-Dask.ipynb # Feature creation with Dask+Polars
-│   └── 03-Modeling.ipynb         # Model development and training
-├── src/                          # Reusable source code
-├── submission/                   # Final prediction files
+│   ├── 03-Modeling-Experiments.ipynb # (Optional) Complete model exploration & comparison
+│   └── 04-Final-Pipeline.ipynb   # (Main) Production pipeline for final submission
+├── models/                        # Trained models
+│   └── lightgbm_final.txt        # Final LightGBM model
+├── submission/                    # Final prediction files
+│   ├── submission.csv            # Submission in CSV format
+│   └── submission.parquet        # Submission in Parquet format
 ├── README.md                     # This documentation
 └── requirements.txt             # Python dependencies
 ```
@@ -82,22 +84,62 @@ Python 3.8+
 4. Install dependencies: `pip install -r requirements.txt`
 5. Place data files in the `data/` folder
 
-### Running the Analysis
-1. **EDA**: Start with `notebooks/01-EDA.ipynb` for data exploration
-2. **Feature Engineering**: Execute `notebooks/02-Feature-Engineering-Dask.ipynb` for feature creation
-3. **Modeling**: Execute `notebooks/03-Modeling.ipynb` for model training and prediction
+### Notebook Structure & Execution
+
+#### For Generating Submission Files:
+1. **Feature Engineering**: Execute `notebooks/02-Feature-Engineering-Dask.ipynb` (if not done already)
+2. **Final Pipeline**: Execute `notebooks/04-Final-Pipeline.ipynb` from start to finish
+   - This is the **main production notebook**
+   - Generates `submission.csv` and `submission.parquet` automatically
+   - Clean, linear execution without errors
+   - Self-contained and reproducible
+
+#### For Understanding the Research Process (Optional):
+1. **EDA**: `notebooks/01-EDA.ipynb` - Data exploration and analysis
+2. **Experiments**: `notebooks/03-Modeling-Experiments.ipynb` - Complete model comparison journey
+   - Documents our exploration of Baselines, RandomForest, LightGBM, and XGBoost
+   - Contains technical justification for choosing LightGBM
+   - Shows why XGBoost was rejected (memory instability issues)
+
+### How to Generate Submission
+```bash
+# After installing dependencies:
+1. Execute notebooks/04-Final-Pipeline.ipynb completely
+2. Files will be generated automatically:
+   - submission/submission.csv
+   - submission/submission.parquet
+```
 
 ### Generated Artifacts
-- **dados_features_completo.csv** (11GB): Complete dataset with engineered features
-- **dados_features_completo.parquet** (194MB): Optimized format for fast loading
+- **dados_features_completo.parquet**: Complete dataset with engineered features (optimized)
 - **feature_engineering_metadata.pkl**: Processing metadata and feature descriptions
+- **lightgbm_final.txt**: Trained LightGBM model ready for predictions
+- **submission.csv** & **submission.parquet**: Final prediction files for competition
 
 ## Development Phases
 - **✅ Phase 1**: Environment setup and project organization 
 - **✅ Phase 2**: Data exploration with comprehensive EDA
 - **✅ Phase 3**: Intelligent feature engineering with Dask+Polars optimization
-- **✅ Phase 4**: Model development and training with temporal validation
-- **🔄 Phase 5**: Final predictions and submission preparation (next)
+- **✅ Phase 4**: Model research and comparison (documented in experiments notebook)
+- **✅ Phase 5**: Production pipeline and final submission generation
+
+## Model Selection Process
+Our rigorous model selection process (documented in `03-Modeling-Experiments.ipynb`):
+
+1. **Baseline Models**: Established strong baselines (Lag-1, Lag-4, Combo Mean)
+2. **RandomForest**: Skipped due to memory constraints with 50M+ records
+3. **LightGBM**: Excellent performance (WMAPE: 15.25%) with robust memory handling
+4. **XGBoost**: Slightly better performance but **critical production issues**:
+   - Memory allocation errors (`bad_allocation`) when training on full dataset
+   - System instability and crashes during production runs
+   - Even with `tree_method="approx"` optimization, still problematic
+
+**Final Decision**: **LightGBM** selected for production due to:
+- ✅ **Robustness**: Consistent performance on large datasets  
+- ✅ **Memory Efficiency**: No crashes or allocation errors
+- ✅ **Speed**: 3-5x faster training than XGBoost
+- ✅ **Reliability**: Stable predictions in production environment  
+- ✅ **Performance**: Only 0.5% worse than XGBoost (acceptable trade-off)
 
 ## Team
 - Developer: Rafael
