@@ -142,7 +142,7 @@ Our rigorous model selection process (documented in `03-Modeling-Experiments.ipy
 - ✅ **Performance**: Only 0.5% worse than XGBoost (acceptable trade-off)
 
 ## Team
-- Developer: Rafael
+- Developer: Rafael Widers
 
 ## Competition Details
 - Repository: Public GitHub repository
