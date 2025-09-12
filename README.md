@@ -99,7 +99,15 @@ Após a conclusão do Passo 1, abra e execute todas as células do notebook:
 ▶️ **`notebooks/04-Final-Pipeline.ipynb`**
 
   - **O que ele faz?** Carrega os dados processados, treina o modelo LightGBM final e gera o arquivo de previsão para as 5 semanas de janeiro de 2023.
-  - **Resultado:** O arquivo `submission.parquet` será salvo na pasta submissions, pronto para ser enviado.
+  - **Resultado:** O arquivo `submission.parquet` será salvo na pasta submissions.
+
+### Passo 3: Conversão para Formato Final
+
+Após a conclusão do Passo 2, abra e execute todas as células do notebook:
+▶️ **`notebooks/05-Submission-Converter.ipynb`**
+
+  - **O que ele faz?** Carrega o arquivo `submission.parquet` completo, remove as previsões de venda zero para atender ao limite de linhas da plataforma, e salva o resultado final nos formatos `submission_final.csv` e `submission_final.parquet`, prontos para serem enviados.
+  - **Resultado:** Os arquivos `submission_final.csv` e `submission_final.parquet` serão salvos na pasta submissions.
 
 -----
 
@@ -112,7 +120,8 @@ Após a conclusão do Passo 1, abra e execute todas as células do notebook:
 │   ├── 01-EDA.ipynb       # Análise Exploratória dos Dados
 │   ├── 02-Feature-Engineering-Dask.ipynb # PASSO 1: Gera os dados de treino/teste
 │   ├── 03-Modeling-Experiments.ipynb     # Documentação da escolha e comparação de modelos
-│   └── 04-Final-Pipeline.ipynb           # PASSO 2: Treina o modelo e gera a submissão
+│   ├── 04-Final-Pipeline.ipynb           # PASSO 2: Treina o modelo e gera a submissão
+│   └── 05-Submission-Converter.ipynb     # PASSO 3: Converte para formato final
 ├── .gitignore             # Arquivos ignorados pelo Git
 ├── requirements.txt       # Lista de dependências Python
 ├── test_env.py            # Script para verificar a instalação do ambiente
