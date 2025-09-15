@@ -81,11 +81,15 @@ Os dados brutos fornecidos pelo desafio devem ser colocados na pasta `/data`. Ce
 
 -----
 
-## 🚀 Como Gerar a Submissão (Fluxo de Execução)
+## 🚀 Como Gerar as Submissões (Fluxos de Execução)
 
-O processo é dividido em duas etapas principais, executadas através dos notebooks Jupyter.
+O projeto oferece duas estratégias de submissão: uma com modelo vanilla e outra com hiperparâmetros otimizados pelo Optuna.
 
-### Passo 1: Engenharia de Features
+---
+
+### 📋 **SUBMISSÃO 1: Modelo LightGBM Vanilla**
+
+#### Passo 1: Engenharia de Features
 
 Abra e execute todas as células do notebook:
 ▶️ **`notebooks/02-Feature-Engineering-Dask.ipynb`**
@@ -93,7 +97,7 @@ Abra e execute todas as células do notebook:
   - **O que ele faz?** Este notebook carrega os dados brutos, aplica todo o pré-processamento e a engenharia de features, e salva os datasets de treino e teste processados na pasta `data/`.
   - **Resultado:** Arquivos processados.
 
-### Passo 2: Treinamento e Geração da Submissão
+#### Passo 2: Treinamento e Geração da Submissão
 
 Após a conclusão do Passo 1, abra e execute todas as células do notebook:
 ▶️ **`notebooks/04-Final-Pipeline.ipynb`**
@@ -101,13 +105,41 @@ Após a conclusão do Passo 1, abra e execute todas as células do notebook:
   - **O que ele faz?** Carrega os dados processados, treina o modelo LightGBM final e gera o arquivo de previsão para as 5 semanas de janeiro de 2023.
   - **Resultado:** O arquivo `submission.parquet` será salvo na pasta submissions.
 
-### Passo 3: Conversão para Formato Final
+#### Passo 3: Conversão para Formato Final
 
 Após a conclusão do Passo 2, abra e execute todas as células do notebook:
 ▶️ **`notebooks/05-Submission-Converter.ipynb`**
 
   - **O que ele faz?** Carrega o arquivo `submission.parquet` completo, remove as previsões de venda zero para atender ao limite de linhas da plataforma, e salva o resultado final nos formatos `submission_final.csv` e `submission_final.parquet`, prontos para serem enviados.
   - **Resultado:** Os arquivos `submission_final.csv` e `submission_final.parquet` serão salvos na pasta submissions.
+
+---
+
+### 🎯 **SUBMISSÃO 2: Modelo LightGBM Otimizado (Optuna)**
+
+#### Passo 1: Engenharia de Features
+
+Execute o mesmo notebook da Submissão 1:
+▶️ **`notebooks/02-Feature-Engineering-Dask.ipynb`**
+
+  - **Pré-requisito:** Gera os mesmos dados processados necessários para qualquer estratégia de modelagem.
+
+#### Passo 2: Verificação dos Parâmetros Otimizados
+
+Verifique se o arquivo de parâmetros otimizados está presente:
+📁 **`data/best_lgbm_params_optuna.pkl`**
+
+  - **Fonte:** Este arquivo foi gerado pelo notebook `06-Otimizacao-Hiperparametros-Optuna.ipynb` (processo demorado).
+  - **Nota:** O arquivo já deve estar presente no repositório para evitar re-execução da otimização.
+
+#### Passo 3: Treinamento e Submissão Final Otimizada
+
+Execute o notebook principal da segunda submissão:
+▶️ **`notebooks/08-Final-Optuna.ipynb`**
+
+  - **O que ele faz?** Carrega os dados processados, utiliza os parâmetros otimizados pelo Optuna, treina o modelo LightGBM final e gera diretamente os arquivos de submissão filtrados (sem zeros).
+  - **Resultado:** Os arquivos `submission_final_optuna.csv` e `submission_final_optuna.parquet` serão salvos na pasta submissions.
+  - **Vantagem:** Pipeline integrado que já remove automaticamente as previsões zero, gerando arquivos prontos para submissão.
 
 -----
 
@@ -116,12 +148,20 @@ Após a conclusão do Passo 2, abra e execute todas as células do notebook:
 ```
 .
 ├── data/                  # Dados brutos e processados
+│   ├── best_lgbm_params_optuna.pkl      # Parâmetros otimizados pelo Optuna
+│   └── [outros arquivos processados]    # Dados de features e modelos
 ├── notebooks/             # Jupyter Notebooks com a análise e desenvolvimento
 │   ├── 01-EDA.ipynb       # Análise Exploratória dos Dados
 │   ├── 02-Feature-Engineering-Dask.ipynb # PASSO 1: Gera os dados de treino/teste
 │   ├── 03-Modeling-Experiments.ipynb     # Documentação da escolha e comparação de modelos
-│   ├── 04-Final-Pipeline.ipynb           # PASSO 2: Treina o modelo e gera a submissão
-│   └── 05-Submission-Converter.ipynb     # PASSO 3: Converte para formato final
+│   ├── 04-Final-Pipeline.ipynb           # SUBMISSÃO 1: Modelo vanilla
+│   ├── 05-Submission-Converter.ipynb     # SUBMISSÃO 1: Converte para formato final
+│   ├── 06-Otimizacao-Hiperparametros-Optuna.ipynb # Otimização de hiperparâmetros
+│   ├── 07-Optuna-Experiments.ipynb       # Experimentos com Optuna
+│   └── 08-Final-Optuna.ipynb             # SUBMISSÃO 2: Modelo otimizado
+├── submissions/           # Arquivos de submissão gerados
+│   ├── submission_final.csv              # Submissão 1 (modelo vanilla)
+│   └── submission_final_optuna.csv       # Submissão 2 (modelo otimizado)
 ├── .gitignore             # Arquivos ignorados pelo Git
 ├── requirements.txt       # Lista de dependências Python
 ├── test_env.py            # Script para verificar a instalação do ambiente
@@ -132,12 +172,25 @@ Após a conclusão do Passo 2, abra e execute todas as células do notebook:
 
 ## 🛠️ Metodologia Aplicada
 
-A solução foi desenvolvida seguindo uma abordagem estruturada.
+A solução foi desenvolvida seguindo uma abordagem estruturada com duas estratégias de submissão.
+
+### 🔬 **Desenvolvimento Base**
 
 1.  **Análise Exploratória (`01-EDA.ipynb`):** Investigação profunda dos dados para entender distribuições, sazonalidades e tendências, guiando a engenharia de features.
 2.  **Engenharia de Features Escalável (`02-Feature-Engineering-Dask.ipynb`):** Uso de **Dask** e **Polars** para processar grande volume de dados. Foram criadas features temporais, de lag e estatísticas móveis.
 3.  **Modelagem e Documentação (`03-Modeling-Experiments.ipynb`):** Este notebook serve como um "diário de bordo", documentando os testes com diferentes algoritmos (XGBoost, LightGBM) e justificando a escolha do **LightGBM** como modelo final devido ao seu equilíbrio entre performance, velocidade e eficiência de memória.
-4.  **Pipeline Final (`04-Final-Pipeline.ipynb`):** Consolida as melhores técnicas em um pipeline otimizado para treinar o modelo e gerar a previsão final de forma reprodutível.
+
+### 🎯 **Estratégias de Submissão**
+
+#### **Submissão 1: Modelo Vanilla**
+- **Pipeline Final (`04-Final-Pipeline.ipynb`):** LightGBM com parâmetros padrão otimizados manualmente.
+- **Conversão (`05-Submission-Converter.ipynb`):** Remove predições zero para atender limites da plataforma.
+- **Foco:** Baseline sólida e rápida implementação.
+
+#### **Submissão 2: Modelo Otimizado**
+- **Otimização de Hiperparâmetros (`06-Otimizacao-Hiperparametros-Optuna.ipynb`):** Uso do **Optuna** para encontrar a melhor combinação de hiperparâmetros através de busca bayesiana.
+- **Pipeline Integrado (`08-Final-Optuna.ipynb`):** LightGBM com parâmetros otimizados e pipeline completo integrado.
+- **Foco:** Máxima performance através de otimização automática de hiperparâmetros.
 
 ## Team
 - Developer: Rafael Winders
